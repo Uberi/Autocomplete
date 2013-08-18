@@ -15,7 +15,7 @@ BoxHeight := 165 ;height of the suggestions box in pixels
 ShowLength := 4 ;minimum length of word before showing suggestions
 CorrectCase := True ;whether or not to fix uppercase or lowercase to match the suggestion
 
-NormKeyList := "a`nb`nc`nd`ne`nf`ng`nh`ni`nj`nk`nl`nm`nn`no`np`nq`nr`ns`nt`nu`nv`nw`nx`ny`nz" ;list of key names separated by `n that make up words in upper and lower case variants
+NormalKeyList := "a`nb`nc`nd`ne`nf`ng`nh`ni`nj`nk`nl`nm`nn`no`np`nq`nr`ns`nt`nu`nv`nw`nx`ny`nz" ;list of key names separated by `n that make up words in upper and lower case variants
 NumberKeyList := "1`n2`n3`n4`n5`n6`n7`n8`n9`n0" ;list of key names separated by `n that make up words as well as their numpad equivalents
 OtherKeyList := "'`n-" ;list of key names separated by `n that make up words
 ResetKeyList := "Esc`nSpace`nHome`nPGUP`nPGDN`nEnd`nLeft`nRight`nRButton`nMButton`n,`n.`n/`n[`n]`n;`n\`n=`n```n"""  ;list of key names separated by `n that cause suggestions to reset
@@ -24,6 +24,17 @@ TriggerKeyList := "Tab`nEnter" ;list of key names separated by `n that trigger c
 IniRead, MaxResults, %SettingsFile%, Settings, MaxResults, %MaxResults%
 IniRead, ShowLength, %SettingsFile%, Settings, ShowLength, %ShowLength%
 IniRead, CorrectCase, %SettingsFile%, Settings, CorrectCase, %CorrectCase%
+
+IniRead, NormalKeyList, %SettingsFile%, Keys, NormalKeyList, %NormalKeyList%
+NormalKeyList := URLDecode(NormalKeyList)
+IniRead, NumberKeyList, %SettingsFile%, Keys, NumberKeyList, %NumberKeyList%
+NumberKeyList := URLDecode(NumberKeyList)
+IniRead, OtherKeyList, %SettingsFile%, Keys, OtherKeyList, %OtherKeyList%
+OtherKeyList := URLDecode(OtherKeyList)
+IniRead, ResetKeyList, %SettingsFile%, Keys, ResetKeyList, %ResetKeyList%
+ResetKeyList := URLDecode(ResetKeyList)
+IniRead, TriggerKeyList, %SettingsFile%, Keys, TriggerKeyList, %TriggerKeyList%
+TriggerKeyList := URLDecode(TriggerKeyList)
 
 TrayTip, Settings, Click the tray icon to modify settings, 5, 1
 
@@ -57,7 +68,7 @@ Gui, Show, h%BoxHeight% Hide, AutoComplete
 
 Gosub, ResetWord
 
-SetHotkeys(NormKeyList,NumberKeyList,OtherKeyList,ResetKeyList,TriggerKeyList)
+SetHotkeys(NormalKeyList,NumberKeyList,OtherKeyList,ResetKeyList,TriggerKeyList)
 
 OnExit, ExitSub
 Return
@@ -66,9 +77,15 @@ ExitSub:
 Gui, Settings:Submit
 
 ;write settings
-IniWrite, %MaxResults%, %SettingsFile%, Settings, MaxResults
-IniWrite, %ShowLength%, %SettingsFile%, Settings, ShowLength
-IniWrite, %CorrectCase%, %SettingsFile%, Settings, CorrectCase
+IniWrite, % URLEncode(MaxResults), %SettingsFile%, Settings, MaxResults
+IniWrite, % URLEncode(ShowLength), %SettingsFile%, Settings, ShowLength
+IniWrite, % URLEncode(CorrectCase), %SettingsFile%, Settings, CorrectCase
+
+IniWrite, % URLEncode(NormalKeyList), %SettingsFile%, Keys, NormalKeyList
+IniWrite, % URLEncode(NumberKeyList), %SettingsFile%, Keys, NumberKeyList
+IniWrite, % URLEncode(OtherKeyList), %SettingsFile%, Keys, OtherKeyList
+IniWrite, % URLEncode(ResetKeyList), %SettingsFile%, Keys, ResetKeyList
+IniWrite, % URLEncode(TriggerKeyList), %SettingsFile%, Keys, TriggerKeyList
 
 ;write wordlist file
 File := FileOpen(WordListFile,"w")
@@ -284,9 +301,9 @@ PrepareWordList(ByRef WordList)
         StringReplace, WordList, WordList, `n`n, `n, All
 }
 
-SetHotkeys(NormKeyList,NumberKeyList,OtherKeyList,ResetKeyList,TriggerKeyList)
+SetHotkeys(NormalKeyList,NumberKeyList,OtherKeyList,ResetKeyList,TriggerKeyList)
 {
-    Loop, Parse, NormKeyList, `n
+    Loop, Parse, NormalKeyList, `n
     {
         Hotkey, ~%A_LoopField%, Key, UseErrorLevel
         Hotkey, ~+%A_LoopField%, ShiftedKey, UseErrorLevel
@@ -409,4 +426,28 @@ TextWidth(String)
     }
     DllCall("GetTextExtentPoint32","UPtr",hDC,"Str",String,"Int",StrLen(String),"UPtr",&Extent)
     Return, NumGet(Extent,0,"UInt")
+}
+
+URLEncode(Text)
+{
+    StringReplace, Text, Text, `%, `%25, All
+    FormatInteger := A_FormatInteger, FoundPos := 0
+    SetFormat, IntegerFast, Hex
+    While, FoundPos := RegExMatch(Text,"S)[^\w-\.~%]",Char,FoundPos + 1)
+        StringReplace, Text, Text, %Char%, % "%" . SubStr("0" . SubStr(Asc(Char),3),-1), All
+    SetFormat, IntegerFast, %FormatInteger%
+    Return, Text
+}
+
+URLDecode(Encoded)
+{
+    FoundPos := 0
+    While, FoundPos := InStr(Encoded,"%",False,FoundPos + 1)
+    {
+        Value := SubStr(Encoded,FoundPos + 1,2)
+        If (Value != "25")
+            StringReplace, Encoded, Encoded, `%%Value%, % Chr("0x" . Value), All
+    }
+    StringReplace, Encoded, Encoded, `%25, `%, All
+    Return, Encoded
 }
