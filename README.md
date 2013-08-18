@@ -1,6 +1,6 @@
 Autocomplete by Uberi
 =====================
-As-you-type suggestions anywhere!
+Suggests and completes words as you type! Write faster and more efficiently.
 
 # [Get it now](https://github.com/Uberi/Autocomplete/releases/)
 

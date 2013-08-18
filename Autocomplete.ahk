@@ -311,6 +311,8 @@ SetHotkeys(NormKeyList,NumberKeyList,OtherKeyList,ResetKeyList,TriggerKeyList)
 
 Suggest(Word,ByRef WordList)
 {
+    Pattern := RegExReplace(Word,"S).","$0.*") ;subsequence matching pattern
+
     ;treat accented characters as equivalent to their unaccented counterparts
     Pattern := RegExReplace(Pattern,"S)[a" . Chr(224) . Chr(226) . "]","[a" . Chr(224) . Chr(226) . "]")
     Pattern := RegExReplace(Pattern,"S)[c" . Chr(231) . "]","[c" . Chr(231) . "]")
