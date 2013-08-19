@@ -3,6 +3,8 @@
 #Warn All
 #Warn LocalSameAsGlobal, Off
 
+#MaxThreadsBuffer On
+
 SetBatchLines, -1
 
 WordListFile := A_ScriptDir . "\WordList.txt" ;path of the wordlist file
@@ -346,42 +348,41 @@ Suggest(Word,ByRef WordList)
     While, Position := RegExMatch(WordList,Pattern,Word,Position)
     {
         Position += StrLen(Word)
-        StringReplace, Word, Word, %A_Tab%, %A_Space%%A_Space%%A_Space%%A_Space%, All
-        MatchList .= Word . "|"
+        StringReplace, Word, Word, %A_Tab%, %A_Space%%A_Space%%A_Space%%A_Space%, All ;convert tabs to spaces
+        MatchList .= Word . "`n"
     }
+    MatchList := SubStr(MatchList,1,-1) ;remove trailing delimiter
 
-    Sort, MatchList, FRankResults D| ;rank results by score
+    ;sort by score
+    SortedMatches := ""
+    Loop, Parse, Matchlist, `n
+        SortedMatches .= A_LoopField . "\" . Score(Word,A_LoopField) . "`n"
+    SortedMatches := SubStr(SortedMatches,1,-1)
+    Sort, SortedMatches, N R \ ;rank results numerically descending by score
+
+    ;remove scores
+    MatchList := ""
+    Loop, Parse, SortedMatches, `n
+        MatchList .= SubStr(A_LoopField,1,InStr(A_LoopField,"\",True,-1) - 1) . "|"
 
     Return, MatchList
 }
 
-RankResults(Entry1,Entry2,Offset)
+Score(Word,Entry)
 {
-    Return, Score(Entry2,0) - Score(Entry1,Offset)
-}
-
-Score(Entry,Offset)
-{
-    global CurrentWord
     Score := 100
 
-    Length := StrLen(CurrentWord)
+    Length := StrLen(Word)
 
     ;determine prefixing
     Position := 1
-    While, Position <= Length && SubStr(CurrentWord,Position,1) = SubStr(Entry,Position,1)
+    While, Position <= Length && SubStr(Word,Position,1) = SubStr(Entry,Position,1)
         Position ++
     Score *= Position ** 3
 
     ;determine number of superfluous characters
-    RegExMatch(Entry,"`nmS)^" . SubStr(RegExReplace(CurrentWord,"S).","$0.*"),1,-2),Word)
-    Score *= (1 + StrLen(Word) - Length) ** -1.5
-
-    ;determine the offset (for wordlists sorted by frequency)
-    If Offset > 0
-        Score *= 10 ** 0.4
-    Else If Offset < 0
-        Score *= 10 ** -0.4
+    RegExMatch(Entry,"`nmS)^" . SubStr(RegExReplace(Word,"S).","$0.*"),1,-2),Remaining)
+    Score *= (1 + StrLen(Remaining) - Length) ** -1.5
 
     Return, Score
 }
