@@ -40,7 +40,6 @@ TriggerKeyList := URLDecode(TriggerKeyList)
 
 TrayTip, Settings, Click the tray icon to modify settings, 5, 1
 
-SetTitleMatchMode, RegEx
 CoordMode, Caret
 SetKeyDelay, 0
 SendMode, Input
@@ -264,14 +263,14 @@ MaxWidth += 30 ;add room for the scrollbar
 ;update the interface
 GuiControl,, Matched, |%MatchList%
 GuiControl, Choose, Matched, 1
-GuiControl, Move, Matched, w%MaxWidth%
+GuiControl, Move, Matched, w%MaxWidth% ;set the control width
 PosX := A_CaretX + OffsetX
 If PosX + MaxWidth > ScreenWidth ;past right side of the screen
     PosX := ScreenWidth - MaxWidth
 PosY := A_CaretY + OffsetY
 If PosY + BoxHeight > ScreenHeight ;past bottom of the screen
     PosY := ScreenHeight - BoxHeight
-Gui, Show, x%PosX% y%PosY% w%MaxWidth% NoActivate
+Gui, Show, x%PosX% y%PosY% w%MaxWidth% NoActivate ;show window
 Return
 
 CompleteWord:
@@ -299,8 +298,9 @@ PrepareWordList(ByRef WordList)
 {
     If InStr(WordList,"`r")
         StringReplace, WordList, WordList, `r,, All
-    While, InStr(WordList,"`n`n")
+    While, InStr(WordList,"`n`n") ;remove blank lines within the list
         StringReplace, WordList, WordList, `n`n, `n, All
+    WordList := Trim(WordList,"`n") ;remove blank lines at the beginning and end
 }
 
 SetHotkeys(NormalKeyList,NumberKeyList,OtherKeyList,ResetKeyList,TriggerKeyList)
@@ -328,9 +328,9 @@ SetHotkeys(NormalKeyList,NumberKeyList,OtherKeyList,ResetKeyList,TriggerKeyList)
         Hotkey, %A_LoopField%, CompleteWord, UseErrorLevel
 }
 
-Suggest(Word,ByRef WordList)
+Suggest(CurrentWord,ByRef WordList)
 {
-    Pattern := RegExReplace(Word,"S).","$0.*") ;subsequence matching pattern
+    Pattern := RegExReplace(CurrentWord,"S).","$0.*") ;subsequence matching pattern
 
     ;treat accented characters as equivalent to their unaccented counterparts
     Pattern := RegExReplace(Pattern,"S)[a" . Chr(224) . Chr(226) . "]","[a" . Chr(224) . Chr(226) . "]")
@@ -355,15 +355,15 @@ Suggest(Word,ByRef WordList)
 
     ;sort by score
     SortedMatches := ""
-    Loop, Parse, Matchlist, `n
-        SortedMatches .= A_LoopField . "\" . Score(Word,A_LoopField) . "`n"
+    Loop, Parse, MatchList, `n
+        SortedMatches .= Score(CurrentWord,A_LoopField) . "`t" . A_LoopField . "`n"
     SortedMatches := SubStr(SortedMatches,1,-1)
-    Sort, SortedMatches, N R \ ;rank results numerically descending by score
+    Sort, SortedMatches, N R ;rank results numerically descending by score
 
     ;remove scores
     MatchList := ""
     Loop, Parse, SortedMatches, `n
-        MatchList .= SubStr(A_LoopField,1,InStr(A_LoopField,"\",True,-1) - 1) . "|"
+        MatchList .= SubStr(A_LoopField,InStr(A_LoopField,"`t",True,-1) + 1) . "|"
 
     Return, MatchList
 }
@@ -378,10 +378,10 @@ Score(Word,Entry)
     Position := 1
     While, Position <= Length && SubStr(Word,Position,1) = SubStr(Entry,Position,1)
         Position ++
-    Score *= Position ** 3
+    Score *= Position ** 8
 
     ;determine number of superfluous characters
-    RegExMatch(Entry,"`nmS)^" . SubStr(RegExReplace(Word,"S).","$0.*"),1,-2),Remaining)
+    RegExMatch(Entry,"`nimS)^" . SubStr(RegExReplace(Word,"S).","$0.*"),1,-2),Remaining)
     Score *= (1 + StrLen(Remaining) - Length) ** -1.5
 
     Return, Score
