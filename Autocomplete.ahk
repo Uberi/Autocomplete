@@ -1,3 +1,5 @@
+codepage = 65001    ; UTF-8
+FileEncoding, UTF-8
 #NoEnv
 
 #Warn All
@@ -14,8 +16,8 @@ MaxResults := 20 ;maximum number of results to display
 OffsetX := 0 ;offset in caret position in X axis
 OffsetY := 20 ;offset from caret position in Y axis
 BoxHeight := 165 ;height of the suggestions box in pixels
-ShowLength := 4 ;minimum length of word before showing suggestions
-CorrectCase := True ;whether or not to fix uppercase or lowercase to match the suggestion
+ShowLength := 3 ;minimum length of word before showing suggestions
+CorrectCase := False ;whether or not to fix uppercase or lowercase to match the suggestion
 
 NormalKeyList := "a`nb`nc`nd`ne`nf`ng`nh`ni`nj`nk`nl`nm`nn`no`np`nq`nr`ns`nt`nu`nv`nw`nx`ny`nz" ;list of key names separated by `n that make up words in upper and lower case variants
 NumberKeyList := "1`n2`n3`n4`n5`n6`n7`n8`n9`n0" ;list of key names separated by `n that make up words as well as their numpad equivalents
@@ -110,22 +112,24 @@ Gui, Font,, Century Gothic
 Gui, Color, White, FFF8F8
 
 Gui, Font, s24 cFFAAAA
-Gui, Add, Text, x10 y10 w540 h45 Center, a u t o c o m p l e t e
+Gui, Add, Text, x10 y10 w540 h45 Center, استكمال تلقائي
 Gui, Add, Progress, x10 y55 w540 h1 BackgroundEEDDDD, 0
 
+
 Gui, Font, s14 c885555
-Gui, Add, Text, x10 y73 w180 h30, RESULT LIMIT
-Gui, Add, Edit, x190 y70 w80 h30 Right Number
+
+Gui, Add, Text, x10 y73 w180 h30, عدد الاقتراحات
+Gui, Add, Edit, x190 y70 w80 h30 Left Number
 Gui, Add, UpDown, Range1-100 vMaxResults, %MaxResults%
-Gui, Add, Text, x10 y113 w180 h30, TRIGGER LENGTH
+Gui, Add, Text, x10 y113 w180 h30, طول الدليل
 Gui, Add, Edit, x190 y110 w80 h30 Right Number
 Gui, Add, UpDown, Range1-10, %ShowLength%
 
-Gui, Add, Checkbox, x10 y150 w260 h30 Checked%CorrectCase% vCorrectCase, CASE CORRECTION
+Gui, Add, Checkbox, x10 y150 w260 h30 Checked%CorrectCase% vCorrectCase, تصحيح الحالة
 
 Gui, Add, Edit, x10 y210 w230 h30 vNewWord
 Gui, Add, Button, x240 y210 w30 h30 Disabled vAddWord gAddWord, +
-Gui, Add, Button, x10 y250 w260 h40 Disabled vRemoveWord gRemoveWord, REMOVE SELECTED
+Gui, Add, Button, x10 y250 w260 h40 Disabled vRemoveWord gRemoveWord, احذف المحددة
 Gui, Font, s8, Courier New
 Gui, Add, ListView, x290 y70 w260 h220 -Hdr vWords, Words
 
@@ -133,7 +137,7 @@ Gui, Color, White
 Gui, +ToolWindow +AlwaysOnTop
 Gui, Show, w560 h300, Autocomplete by Uberi
 
-LV_Add("", "Reading wordlist...")
+LV_Add("", "يحمّل قائمة الكلمات...")
 Sleep, 0
 
 ;populate list with entries from wordlist
@@ -230,7 +234,7 @@ Suggest:
 Gui, Suggestions:Default
 
 ;check word length against minimum length
-If StrLen(CurrentWord) < ShowLength
+If StrLen(CurrentWord) < ShowLength -2
 {
     Gui, Hide
     Return
@@ -330,15 +334,17 @@ SetHotkeys(NormalKeyList,NumberKeyList,OtherKeyList,ResetKeyList,TriggerKeyList)
 
 Suggest(CurrentWord,ByRef WordList)
 {
-    Pattern := RegExReplace(CurrentWord,"S).","$0.*") ;subsequence matching pattern
 
+	CurrentWord := convertArabic(CurrentWord)
+    Pattern := RegExReplace(CurrentWord,"S).","$0.*") ;subsequence matching pattern
+	; MsgBox, %CurrentWord%, %Pattern%  ;; for debug porpus
     ;treat accented characters as equivalent to their unaccented counterparts
-    Pattern := RegExReplace(Pattern,"S)[a" . Chr(224) . Chr(226) . "]","[a" . Chr(224) . Chr(226) . "]")
-    Pattern := RegExReplace(Pattern,"S)[c" . Chr(231) . "]","[c" . Chr(231) . "]")
-    Pattern := RegExReplace(Pattern,"S)[e" . Chr(233) . Chr(232) . Chr(234) . Chr(235) . "]","[e" . Chr(233) . Chr(232) . Chr(234) . Chr(235) . "]")
-    Pattern := RegExReplace(Pattern,"S)[i" . Chr(238) . Chr(239) . "]","[i" . Chr(238) . Chr(239) . "]")
-    Pattern := RegExReplace(Pattern,"S)[o" . Chr(244) . "]","[o" . Chr(244) . "]")
-    Pattern := RegExReplace(Pattern,"S)[u" . Chr(251) . Chr(249) . "]","[u" . Chr(251) . Chr(249) . "]")
+    ; Pattern := RegExReplace(Pattern,"S)[a" . Chr(224) . Chr(226) . "]","[a" . Chr(224) . Chr(226) . "]")
+    ; Pattern := RegExReplace(Pattern,"S)[c" . Chr(231) . "]","[c" . Chr(231) . "]")
+    ; Pattern := RegExReplace(Pattern,"S)[e" . Chr(233) . Chr(232) . Chr(234) . Chr(235) . "]","[e" . Chr(233) . Chr(232) . Chr(234) . Chr(235) . "]")
+    ; Pattern := RegExReplace(Pattern,"S)[i" . Chr(238) . Chr(239) . "]","[i" . Chr(238) . Chr(239) . "]")
+    ; Pattern := RegExReplace(Pattern,"S)[o" . Chr(244) . "]","[o" . Chr(244) . "]")
+    ; Pattern := RegExReplace(Pattern,"S)[u" . Chr(251) . Chr(249) . "]","[u" . Chr(251) . Chr(249) . "]")
 
     Pattern := "`nimS)^" . Pattern ;match options
 
@@ -350,9 +356,10 @@ Suggest(CurrentWord,ByRef WordList)
         Position += StrLen(Word)
         StringReplace, Word, Word, %A_Tab%, %A_Space%%A_Space%%A_Space%%A_Space%, All ;convert tabs to spaces
         MatchList .= Word . "`n"
+		; MsgBox, %Word%
     }
     MatchList := SubStr(MatchList,1,-1) ;remove trailing delimiter
-
+	
     ;sort by score
     SortedMatches := ""
     Loop, Parse, MatchList, `n
@@ -451,4 +458,39 @@ URLDecode(Encoded)
     }
     StringReplace, Encoded, Encoded, `%25, `%, All
     Return, Encoded
+}
+
+convertArabic(word)
+{
+    StringReplace, word, word, a, ش, All 
+    StringReplace, word, word, z, ئ, All 
+    StringReplace, word, word, e, ث, All 
+    StringReplace, word, word, r, ق, All 
+    StringReplace, word, word, t, ف, All 
+    StringReplace, word, word, y, غ, All 
+    StringReplace, word, word, u, ع, All 
+    StringReplace, word, word, i, ه, All 
+    StringReplace, word, word, o, خ, All 
+    StringReplace, word, word, p, ح, All 
+	
+	
+    StringReplace, word, word, s, س, All 
+    StringReplace, word, word, q, ض, All 
+    StringReplace, word, word, d, ي, All 
+    StringReplace, word, word, f, ب, All 
+    StringReplace, word, word, g, ل, All 
+    StringReplace, word, word, h, ا, All 
+    StringReplace, word, word, j, ت, All 
+    StringReplace, word, word, k, ن, All 
+    StringReplace, word, word, l, ن, All 
+ 
+    StringReplace, word, word, w, ص, All 
+    StringReplace, word, word, x, ء, All 
+    StringReplace, word, word, c, ؤ, All 
+    StringReplace, word, word, v, ر, All 
+    StringReplace, word, word, b, لا, All 
+    StringReplace, word, word, n, ى, All 
+	
+	
+return word
 }
