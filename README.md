@@ -1,8 +1,8 @@
-Autocomplete by Uberi
+Autocomplete by Uberi (Arabized by Linuxscout)
 =====================
 Suggests and completes words as you type! Write faster and more efficiently.
 
-# [Get it now](https://github.com/Uberi/Autocomplete/releases/)
+# [Get it now](https://github.com/linuxscout/Autocomplete)
 
 ![Screenshot](Screenshot.png)
 
