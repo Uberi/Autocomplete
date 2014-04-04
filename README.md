@@ -1,20 +1,20 @@
-Autocomplete by Uberi (Arabized by Linuxscout)
+تعريب برنامج الاستكمال التلقائي "Autocomplete by Uberi"
 =====================
 Suggests and completes words as you type! Write faster and more efficiently.
-
-# [Get it now](https://github.com/linuxscout/Autocomplete)
+يقوم التطبيق باقتراح واستكمال الكلمات لدى كتابتها، ما يسمح بالكتابة بشكل أفضل وأسرع
+# [احصل عليه الآن](https://github.com/linuxscout/Autocomplete)
 
 ![Screenshot](Screenshot.png)
 
-Using
+طريقة الاستخدام
 -----
 
-1. Extract the archive to a safe location.
-2. If you downloaded the binaries, open `Autocomplete.exe`.
-3. If you downloaded the source, make sure you have a recent version of [AutoHotkey](http://www.autohotkey.com/) installed, and run `Autocomplete.ahk`.
-4. Start typing somewhere. After the first few characters, a suggestion box will appear.
-5. Use the `Up` and `Down` arrow keys to select an entry if the currently selected one is incorrect.
-6. Press `Enter` or `Tab` to trigger the completion.
+1. قم بفك ضغط الملف المُحمّل
+2. في حال ما إذا قُمت بتحميل التطبيق الجاهز، قم بفتح `Autocomplete.exe`
+3. أما لو قمت بتحميل الشفرة المصدرية، فتحقق أولا بأنك تملك أحدث إصدار من تطبيق [AutoHotkey](http://www.autohotkey.com/ ومن ثم قم بتشغيل `Autocomplete.ahk`.
+4. اشرع في الكتابة وستظهر لك علبة الاقتراحات بعد بضعة حروف.
+5. استعن بزري التوجيه `فوق` و `تحت` لاختيار اقتراح آخر إذا كان الاقتراح الحالي غير مُناسب
+6. اضغط على زر `Enter` أو `Tab` لتأكيد الاختيار.
 
 Advanced
 --------
