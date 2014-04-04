@@ -1,6 +1,5 @@
 تعريب برنامج الاستكمال التلقائي "Autocomplete by Uberi"
 =====================
-Suggests and completes words as you type! Write faster and more efficiently.
 يقوم التطبيق باقتراح واستكمال الكلمات لدى كتابتها، ما يسمح بالكتابة بشكل أفضل وأسرع
 # [احصل عليه الآن](https://github.com/linuxscout/Autocomplete)
 
