@@ -1,35 +1,33 @@
-Autocomplete by Uberi (Arabized by Linuxscout)
+تعريب برنامج الاستكمال التلقائي "Autocomplete by Uberi"
 =====================
-Suggests and completes words as you type! Write faster and more efficiently.
-
-# [Get it now](https://github.com/linuxscout/Autocomplete)
+يقوم التطبيق باقتراح واستكمال الكلمات لدى كتابتها، ما يسمح بالكتابة بشكل أفضل وأسرع
+# [احصل عليه الآن](https://github.com/linuxscout/Autocomplete)
 
 ![Screenshot](Screenshot.png)
 
-Using
+طريقة الاستخدام
 -----
 
-1. Extract the archive to a safe location.
-2. If you downloaded the binaries, open `Autocomplete.exe`.
-3. If you downloaded the source, make sure you have a recent version of [AutoHotkey](http://www.autohotkey.com/) installed, and run `Autocomplete.ahk`.
-4. Start typing somewhere. After the first few characters, a suggestion box will appear.
-5. Use the `Up` and `Down` arrow keys to select an entry if the currently selected one is incorrect.
-6. Press `Enter` or `Tab` to trigger the completion.
+1. قم بفك ضغط الملف المُحمّل
+2. في حال ما إذا قُمت بتحميل التطبيق الجاهز، قم بفتح `Autocomplete.exe`
+3. أما لو قمت بتحميل الشفرة المصدرية، فتحقق أولا بأنك تملك أحدث إصدار من تطبيق [AutoHotkey](http://www.autohotkey.com/) ومن ثم قم بتشغيل `Autocomplete.ahk`.
+4. اشرع في الكتابة في أي مكان وستظهر لك علبة الاقتراحات بعد بضعة حروف.
+5. استعن بزري التوجيه `فوق` و `تحت` لاختيار اقتراح آخر إذا كان الاقتراح الحالي غير مُناسب.
+6. اضغط على زر `Enter` أو `Tab` لتأكيد الاختيار.
 
-Advanced
+إعدادات مُتقدّمة
 --------
+انقر على زر التطبيق (بجانب ساعة النظام) لتظهر لك لوحة التحكم في إعدادات التطبيق التي تسمح لك بالتحكم مثلًا في عدد الاقتراحات التي تظهر في كل مرة أو في عدد الحروف الواجب كتابتها قبل ظهور الاقتراحات.
 
-Click on the tray icon to bring up the settings dialog. The dialog allows you to configure settings such as the maximum number of results to show at a time and the number of characters to type before showing suggestions.
+سيكون بإمكانك أيضا التحكم في قائمة الكلمات بالإضافة أو بالحذف. سيتم حفظ جميع الإعدادات لدى إغلاق التطبيق بشكل آلي.
 
-The dialog also allows you to edit the wordlist by adding or removing words. All settings are saved automatically upon program exit.
+يتم حفظ قائمة الكلمات في ملف `WordList.txt`، حيث يتم تخصيص سطر لكل كلمة. لن تحتاج سوى إلى مُحرر نصوص لتحرير هذا الملف، لكنك ستحتاج إلى مُحرر نصوص يتحمل فتح  الملفات الكبيرة لأنه من المُحتمل أن تنهار المُحررات التي لا تدعم ذلك.
 
-The wordlist is contained in `WordList.txt`. Each line represents a word. The list can be edited with a text editor, but ensure the editor supports larger files before doing so! Some may crash or hang upon editing such files.
+أما الإعدادات فهي محفوظة في ملف `Settings.ini` الموجود داخل مُجلد التطبيق. يحتوي هذا الملف على إعدادات إضافية لا تظهر في لوحة التحكم آنفة الذكر  خاصة تلك التي تتعلق بإعدادات المفاتيح.
 
-Settings are stored in `Settings.ini` in the program directory. This contains a few more settings not accessible in the settings dialog, mainly the key settings.
+إعدادات المفاتيح عبارة عن قائمة عناوين مُرمّزة لأسماء المفاتيح، مثل  `Space` أو `d` ويتم الفصل ما بين كل مفتاحين بسطر جديد (العنوان المُرمّز للسطر الجديد هو  `%0A`). بإمكانك التعديل عليها وفق المفاتيح التي يقبلها التطبيق.
 
-Key settings are URL encoded lists of key names such as `Space` and `d` where each entry is separated by a newline (the URL encoded version of a newline is `%0A`). They can be edited to change the keys accepted by the program.
-
-Licence
+الترخيص
 -------
 
 This program is provided under the 3-clause BSD license. In short, this gives you the right to modify and distribute the program as you please, as long as you make sure the notice below is accessible to the user.
