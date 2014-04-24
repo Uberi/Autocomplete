@@ -62,6 +62,7 @@ Menu, Tray, Default, Settings
 ;set up suggestions window
 Gui, Suggestions:Default
 Gui, Font, s10, Courier New
+Gui, +Delimiter`n
 Gui, Add, ListBox, x0 y0 h%BoxHeight% 0x100 vMatched gCompleteWord AltSubmit
 Gui, -Caption +ToolWindow +AlwaysOnTop +LastFound
 hWindow := WinExist()
@@ -197,6 +198,23 @@ GuiControlGet, Temp1,, Matched
 GuiControl, Choose, Matched, % Temp1 + 1
 Return
 
+!1::
+!2::
+!3::
+!4::
+!5::
+!6::
+!7::
+!8::
+!9::
+!0::
+Gui, Suggestions:Default
+KeyWait, Alt
+Key := SubStr(A_ThisHotkey, 2, 1)
+GuiControl, Choose, Matched, % Key = 0 ? 10 : Key
+Gosub, CompleteWord
+Return
+
 #IfWinExist
 
 ~BackSpace::
@@ -246,22 +264,26 @@ If (MatchList = "")
 }
 
 ;limit the number of results
-Position := InStr(MatchList,"|",True,1,MaxResults)
+Position := InStr(MatchList,"`n",True,1,MaxResults)
 If Position
     MatchList := SubStr(MatchList,1,Position - 1)
 
-;find the longest text width
+;find the longest text width and add numbers
 MaxWidth := 0
-Loop, Parse, MatchList, |
+DisplayList := ""
+Loop, Parse, MatchList, `n
 {
-    Width := TextWidth(A_LoopField)
+    Entry := (A_Index < 10 ? A_Index . ". " : "   ") . A_LoopField
+    Width := TextWidth(Entry)
     If (Width > MaxWidth)
         MaxWidth := Width
+    DisplayList .= Entry . "`n"
 }
 MaxWidth += 30 ;add room for the scrollbar
+DisplayList := SubStr(DisplayList,1,-1)
 
 ;update the interface
-GuiControl,, Matched, |%MatchList%
+GuiControl,, Matched, `n%DisplayList%
 GuiControl, Choose, Matched, 1
 GuiControl, Move, Matched, w%MaxWidth% ;set the control width
 PosX := A_CaretX + OffsetX
@@ -285,9 +307,9 @@ Gui, Hide
 
 ;retrieve the word that was selected
 GuiControlGet, Index,, Matched
-TempList := "|" . MatchList . "|"
-Position := InStr(TempList,"|",0,1,Index) + 1
-NewWord := SubStr(TempList,Position,InStr(TempList,"|",0,Position) - Position)
+TempList := "`n" . MatchList . "`n"
+Position := InStr(TempList,"`n",0,1,Index) + 1
+NewWord := SubStr(TempList,Position,InStr(TempList,"`n",0,Position) - Position)
 
 SendWord(CurrentWord,NewWord,CorrectCase)
 
@@ -359,11 +381,7 @@ Suggest(CurrentWord,ByRef WordList)
         SortedMatches .= Score(CurrentWord,A_LoopField) . "`t" . A_LoopField . "`n"
     SortedMatches := SubStr(SortedMatches,1,-1)
     Sort, SortedMatches, N R ;rank results numerically descending by score
-
-    ;remove scores
-    MatchList := ""
-    Loop, Parse, SortedMatches, `n
-        MatchList .= SubStr(A_LoopField,InStr(A_LoopField,"`t",True,-1) + 1) . "|"
+    MatchList := RegExReplace(SortedMatches,"`nmS)^[^`t]+`t") ;remove scores
 
     Return, MatchList
 }
@@ -383,6 +401,8 @@ Score(Word,Entry)
     ;determine number of superfluous characters
     RegExMatch(Entry,"`nimS)^" . SubStr(RegExReplace(Word,"S).","$0.*"),1,-2),Remaining)
     Score *= (1 + StrLen(Remaining) - Length) ** -1.5
+
+    Score *= StrLen(Word) ** 0.4
 
     Return, Score
 }

@@ -13,8 +13,9 @@ Using
 2. If you downloaded the binaries, open `Autocomplete.exe`.
 3. If you downloaded the source, make sure you have a recent version of [AutoHotkey](http://www.autohotkey.com/) installed, and run `Autocomplete.ahk`.
 4. Start typing somewhere. After the first few characters, a suggestion box will appear.
-5. Use the `Up` and `Down` arrow keys to select an entry if the currently selected one is incorrect.
-6. Press `Enter` or `Tab` to trigger the completion.
+5. Use the `Up` and `Down` arrow keys to select an entry if the currently selected one is not the desired word.
+6. Press `Enter` or `Tab` to trigger the completion with the currently selected word.
+7. Alternatively, press one of `Alt + 1`, `Alt + 2`, ..., `Alt + 9`, `Alt + 0` to trigger completion with the 1st, 2nd, ..., 9th, and 10th word, repectively.
 
 Advanced
 --------
