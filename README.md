@@ -42,7 +42,7 @@ Modifications by thdoan
 - Changed monospace font to Consolas
 - Changed default minimum trigger length to 2
 - Changed suggestions list hotkeys from `Alt + <Num>` to `<Num>`
-- Changed to clear "new word" input box after adding to wordlist
+- Changed to clear "new word" edit box after adding to wordlist
 - Changed Preferences wordlist to alphabetical order (sorted)
 - Replaced English word list with a few code samples
 - Fixed "0." not displayed in suggestions list
