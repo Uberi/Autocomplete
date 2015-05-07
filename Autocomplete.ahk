@@ -1,9 +1,13 @@
 #NoEnv
 
+#Hotstring NoMouse
+#KeyHistory 0
+#MaxMem 1
+#MaxThreadsBuffer On
+#SingleInstance force
+
 #Warn All
 #Warn LocalSameAsGlobal, Off
-
-#MaxThreadsBuffer On
 
 SetBatchLines, -1
 
