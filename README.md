@@ -36,7 +36,7 @@ Modifications by thdoan
 - Added support for NumPad navigation in suggestions list
 - Added ability to navigate suggestions list with `PgUp`/`PgDn`
 - Added ability to autocomplete code snippets with newlines (\n) and tabs (\t)
-- Added ability to move caret to indicator (`|`) after autcompleting (escape with `\|` if you want to insert a literal pipe)
+- Added ability to move caret to indicator (`|`) after autocompleting (escape with `\|` if you want to insert a literal pipe)
 - Added ability to close suggestions list by pressing `Esc`
 - Changed monospace font to Consolas
 - Changed default minimum trigger length to 2
