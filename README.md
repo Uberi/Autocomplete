@@ -2,8 +2,6 @@ Autocomplete by Uberi
 =====================
 Suggests and completes words as you type! Write faster and more efficiently.
 
-__NOTE: This script is only compatible with [AutoHotkey v1.1.19.03](http://ahkscript.org/download/1.1/AutoHotkey111903_Install.exe) and below.__
-
 ![Screenshot](Screenshot.png)
 
 Using
