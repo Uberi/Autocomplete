@@ -2,8 +2,6 @@ Autocomplete by Uberi
 =====================
 Suggests and completes words as you type! Write faster and more efficiently.
 
-# [Get it now](https://github.com/Uberi/Autocomplete/releases/)
-
 ![Screenshot](Screenshot.png)
 
 Using
@@ -13,9 +11,10 @@ Using
 2. If you downloaded the binaries, open `Autocomplete.exe`.
 3. If you downloaded the source, make sure you have a recent version of [AutoHotkey](http://www.autohotkey.com/) installed, and run `Autocomplete.ahk`.
 4. Start typing somewhere. After the first few characters, a suggestion box will appear.
-5. Use the `Up` and `Down` arrow keys to select an entry if the currently selected one is not the desired word.
+5. Use the `Up`/`Down` and `PgUp`/`PgDn` keys to select an entry if the currently selected one is not the desired word.
 6. Press `Enter` or `Tab` to trigger the completion with the currently selected word.
-7. Alternatively, press one of `Alt + 1`, `Alt + 2`, ..., `Alt + 9`, `Alt + 0` to trigger completion with the 1st, 2nd, ..., 9th, and 10th word, repectively.
+7. Alternatively, press one of `1`, `2`, ... `9`, `0` to trigger completion with the 1st, 2nd, ... 9th, and 10th word, repectively.
+8. Press `Esc` to cancel and close the suggestions list
 
 Advanced
 --------
@@ -30,6 +29,21 @@ Settings are stored in `Settings.ini` in the program directory. This contains a 
 
 Key settings are URL encoded lists of key names such as `Space` and `d` where each entry is separated by a newline (the URL encoded version of a newline is `%0A`). They can be edited to change the keys accepted by the program.
 
+Modifications by thdoan
+-----------------------
+
+- Added support for "<" character by default (to autocomplete <tag>)
+- Added support for NumPad navigation in suggestions list
+- Added ability to navigate suggestions list with PgUp/PgDn
+- Added ability to autocomplete code snippets with newlines (\n) and tabs (\t)
+- Added ability to move caret to indicator (|) after autcompleting (escape with \| if you want to insert a literal pipe)
+- Added ability to close suggestions list by pressing `Esc`
+- Changed monospace font to Consolas
+- Changed default minimum trigger length to 2
+- Changed suggestions list hotkeys from `Alt + <Numb>` to `<Num>`
+- Replaced English word list with a few code samples
+- Fixed "0." not displayed in suggestions list
+
 Licence
 -------
 
@@ -37,9 +51,9 @@ This program is provided under the 3-clause BSD license. In short, this gives yo
 
     Copyright (c) 2013, Anthony Zhang
     All rights reserved.
-    
+
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    
+
     Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
     Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
     Neither the name of the <ORGANIZATION> nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.

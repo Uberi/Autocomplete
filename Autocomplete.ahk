@@ -14,14 +14,14 @@ MaxResults := 20 ;maximum number of results to display
 OffsetX := 0 ;offset in caret position in X axis
 OffsetY := 20 ;offset from caret position in Y axis
 BoxHeight := 165 ;height of the suggestions box in pixels
-ShowLength := 4 ;minimum length of word before showing suggestions
+ShowLength := 2 ;minimum length of word before showing suggestions
 CorrectCase := True ;whether or not to fix uppercase or lowercase to match the suggestion
 
 NormalKeyList := "a`nb`nc`nd`ne`nf`ng`nh`ni`nj`nk`nl`nm`nn`no`np`nq`nr`ns`nt`nu`nv`nw`nx`ny`nz" ;list of key names separated by `n that make up words in upper and lower case variants
 NumberKeyList := "1`n2`n3`n4`n5`n6`n7`n8`n9`n0" ;list of key names separated by `n that make up words as well as their numpad equivalents
-OtherKeyList := "'`n-" ;list of key names separated by `n that make up words
-ResetKeyList := "Esc`nSpace`nHome`nPGUP`nPGDN`nEnd`nLeft`nRight`nRButton`nMButton`n,`n.`n/`n[`n]`n;`n\`n=`n```n"""  ;list of key names separated by `n that cause suggestions to reset
-TriggerKeyList := "Tab`nEnter" ;list of key names separated by `n that trigger completion
+OtherKeyList := "<`n'`n-" ;list of key names separated by `n that make up words
+ResetKeyList := "Esc`nSpace`nHome`nNumpadHome`nEnd`nNumpadEnd`nLeft`nNumpadLeft`nRight`nNumpadRight`nRButton`nMButton`n,`n.`n/`n[`n]`n;`n\`n=`n```n""" ;list of key names separated by `n that cause suggestions to reset
+TriggerKeyList := "Tab`nEnter`nNumpadEnter" ;list of key names separated by `n that trigger completion
 
 IniRead, MaxResults, %SettingsFile%, Settings, MaxResults, %MaxResults%
 IniRead, ShowLength, %SettingsFile%, Settings, ShowLength, %ShowLength%
@@ -62,6 +62,7 @@ Menu, Tray, Default, Settings
 ;set up suggestions window
 Gui, Suggestions:Default
 Gui, Font, s10, Courier New
+Gui, Font, s10, Consolas
 Gui, +Delimiter`n
 Gui, Add, ListBox, x0 y0 h%BoxHeight% 0x100 vMatched gCompleteWord AltSubmit
 Gui, -Caption +ToolWindow +AlwaysOnTop +LastFound
@@ -107,6 +108,7 @@ If WinExist()
 
 Gui, Settings:Default
 Gui, Font,, Arial
+Gui, Font,, Calibri
 Gui, Font,, Century Gothic
 Gui, Color, White, FFF8F8
 
@@ -128,6 +130,7 @@ Gui, Add, Edit, x10 y210 w230 h30 vNewWord
 Gui, Add, Button, x240 y210 w30 h30 Disabled vAddWord gAddWord, +
 Gui, Add, Button, x10 y250 w260 h40 Disabled vRemoveWord gRemoveWord, REMOVE SELECTED
 Gui, Font, s8, Courier New
+Gui, Font, s8, Consolas
 Gui, Add, ListView, x290 y70 w260 h220 -Hdr vWords, Words
 
 Gui, Color, White
@@ -186,33 +189,58 @@ If (Temp1 != hWindow)
 Return
 
 Up::
+NumpadUp::
 Gui, Suggestions:Default
 GuiControlGet, Temp1,, Matched
 If Temp1 > 1 ;ensure value is in range
     GuiControl, Choose, Matched, % Temp1 - 1
 Return
 
+PgUp::
+NumpadPgUp::
+Gui, Suggestions:Default
+GuiControlGet, Temp1,, Matched
+If Temp1 > 10 ;ensure value is in range
+    GuiControl, Choose, Matched, % Temp1 - 10
+Else If Temp1 > 1
+    GuiControl, Choose, Matched, 1
+Return
+
 Down::
+NumpadDown::
 Gui, Suggestions:Default
 GuiControlGet, Temp1,, Matched
 GuiControl, Choose, Matched, % Temp1 + 1
 Return
 
-!1::
-!2::
-!3::
-!4::
-!5::
-!6::
-!7::
-!8::
-!9::
-!0::
+PgDn::
+NumpadPgDn::
 Gui, Suggestions:Default
-KeyWait, Alt
-Key := SubStr(A_ThisHotkey, 2, 1)
+GuiControlGet, Temp1,, Matched
+If % Temp1 + 10 <= MaxResults ;ensure value is in range
+    GuiControl, Choose, Matched, % Temp1 + 10
+Else If % Temp1 < MaxResults
+    GuiControl, Choose, Matched, % MaxResults
+Return
+
+1::
+2::
+3::
+4::
+5::
+6::
+7::
+8::
+9::
+0::
+Gui, Suggestions:Default
+Key := SubStr(A_ThisHotkey,1,1)
 GuiControl, Choose, Matched, % Key = 0 ? 10 : Key
 Gosub, CompleteWord
+Return
+
+Esc::
+Gosub, ResetWord
 Return
 
 #IfWinExist
@@ -273,7 +301,7 @@ MaxWidth := 0
 DisplayList := ""
 Loop, Parse, MatchList, `n
 {
-    Entry := (A_Index < 10 ? A_Index . ". " : "   ") . A_LoopField
+    Entry := (A_Index < 10 ? A_Index . ": " : (A_Index = 10 ? "0: " : "   ")) . A_LoopField
     Width := TextWidth(Entry)
     If (Width > MaxWidth)
         MaxWidth := Width
@@ -427,9 +455,42 @@ SendWord(CurrentWord,NewWord,CorrectCase = False)
         StringCaseSense, %CaseSense%
     }
 
-    ;send the word
-    Send, % "{BS " . StrLen(CurrentWord) . "}" ;clear the typed word
-    SendRaw, %NewWord%
+    ;parse newlines (\n) and tabs (\t)
+    StringReplace, NewWord, NewWord, \n, `r`n, UseErrorLevel
+    StringReplace, NewWord, NewWord, \t, `t, UseErrorLevel
+
+    ;parse caret indicator (|)?
+    MoveLeft := ""
+    CaretPosition := InStr(NewWord,"|")
+    If CaretPosition
+    {
+        If InStr(NewWord,"\|")
+        {
+            ;handle escaped pipe
+            StringReplace, NewWord, NewWord, \|, |, UseErrorLevel
+        }
+        Else
+        {
+            ;find caret position
+            MoveLeft := "{Left " . StrLen(NewWord) - CaretPosition . "}"
+            StringReplace, NewWord, NewWord, |,, UseErrorLevel
+        }
+    }
+
+    ClipSaved := Clipboard ;back up clipboard
+    Clipboard = ;empty the clipboard
+    Clipboard := NewWord ;put selected word into clipboard
+    ClipWait ;wait for the clipboard to contain text
+
+    ;delete the current word and paste, moving to caret indicator if applicable
+    Send, % "{BS " . StrLen(CurrentWord) . "}^v" . MoveLeft
+    ;pasting instead of SendRaw to play nicely with auto-indent editors
+    ;SendRaw, %NewWord%
+    Sleep, 50 ;wait for paste action to complete
+    Clipboard := ClipSaved ;restore previous clipboard
+    ;clear to free up memory
+    ClipSaved =
+    MoveLeft =
 }
 
 TextWidth(String)
