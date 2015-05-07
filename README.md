@@ -40,11 +40,16 @@ Modifications by thdoan
 - Added ability to autocomplete code snippets with newlines (\n) and tabs (\t)
 - Added ability to move caret to indicator (`|`) after autocompleting (escape with `\|` if you want to insert a literal pipe)
 - Added ability to close suggestions list by pressing `Esc`
+- Added ability to add new word in Preferences by pressing `Enter`
 - Changed monospace font to Consolas
 - Changed default minimum trigger length to 2
 - Changed suggestions list hotkeys from `Alt + <Num>` to `<Num>`
+- Changed to clear "new word" input box after adding to wordlist
+- Changed Preferences wordlist to alphabetical order (sorted)
 - Replaced English word list with a few code samples
 - Fixed "0." not displayed in suggestions list
+- Fixed incompatibility bug with v1.1.20.00 and higher
+- Fixed horizontal scrollbar in Preferences wordlist
 
 Licence
 -------

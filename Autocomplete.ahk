@@ -51,6 +51,8 @@ SendMode, Input
 ;obtain desktop size across all monitors
 SysGet, ScreenWidth, 78
 SysGet, ScreenHeight, 79
+;obtain vertical scrollbar width (SM_CXVSCROLL)
+SysGet, VSBW, 2
 
 FileRead, WordList, %WordListFile%
 PrepareWordList(WordList)
@@ -131,7 +133,7 @@ Gui, Add, UpDown, Range1-10, %ShowLength%
 Gui, Add, Checkbox, x10 y150 w260 h30 Checked%CorrectCase% vCorrectCase, CASE CORRECTION
 
 Gui, Add, Edit, x10 y210 w230 h30 vNewWord
-Gui, Add, Button, x240 y210 w30 h30 Disabled vAddWord gAddWord, +
+Gui, Add, Button, x240 y210 w30 h30 Disabled Default vAddWord gAddWord, +
 Gui, Add, Button, x10 y250 w260 h40 Disabled vRemoveWord gRemoveWord, REMOVE SELECTED
 Gui, Font, s8, Courier New
 Gui, Font, s8, Consolas
@@ -141,7 +143,7 @@ Gui, Color, White
 Gui, +ToolWindow +AlwaysOnTop
 Gui, Show, w560 h300, Autocomplete by Uberi
 
-LV_Add("", "Reading wordlist...")
+LV_Add("", "Loading wordlist...")
 Sleep, 0
 
 ;populate list with entries from wordlist
@@ -149,6 +151,9 @@ GuiControl, -Redraw, Words
 Loop, Parse, WordList, `n
     LV_Add("", A_LoopField)
 LV_Delete(1)
+If LV_GetCount() >= 13
+    LV_ModifyCol(1,256-VSBW) ;suppress horizontal scrollbar
+GuiControl, +Sort, Words
 GuiControl, +Redraw, Words
 
 GuiControl, Enable, AddWord
@@ -165,9 +170,13 @@ Return
 AddWord:
 Gui, Settings:Default
 GuiControlGet, NewWord,, NewWord
+GuiControl,, NewWord
+
 Index := LV_Add("Select Focus", NewWord)
 LV_Modify(Index, "Vis")
 WordList .= "`n" . NewWord
+If LV_GetCount() >= 13
+    LV_ModifyCol(1,256-VSBW) ;suppress horizontal scrollbar
 Return
 
 RemoveWord:
@@ -180,6 +189,8 @@ While, CurrentRow := LV_GetNext()
     Position := InStr(TempList,"`n",True,1,CurrentRow)
     TempList := SubStr(TempList,1,Position) . SubStr(TempList,InStr(TempList,"`n",True,Position + 1) + 1)
 }
+If LV_GetCount() < 13
+    LV_ModifyCol(1,256) ;reset column width
 GuiControl, +Redraw, Words
 WordList := SubStr(TempList,2,-1)
 Return
