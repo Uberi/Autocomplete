@@ -14,7 +14,7 @@ Using
 5. Use the `Up`/`Down` and `PgUp`/`PgDn` keys to select an entry if the currently selected one is not the desired word.
 6. Press `Enter` or `Tab` to trigger the completion with the currently selected word.
 7. Alternatively, press one of `1`, `2`, ... `9`, `0` to trigger completion with the 1st, 2nd, ... 9th, and 10th word, repectively.
-8. Press `Esc` to cancel and close the suggestions list
+8. Press `Esc` to cancel and close the suggestions list.
 
 Advanced
 --------
@@ -32,15 +32,15 @@ Key settings are URL encoded lists of key names such as `Space` and `d` where ea
 Modifications by thdoan
 -----------------------
 
-- Added support for "<" character by default (to autocomplete <tag>)
+- Added support for "<" character by default (to autocomplete `<tag>`)
 - Added support for NumPad navigation in suggestions list
-- Added ability to navigate suggestions list with PgUp/PgDn
+- Added ability to navigate suggestions list with `PgUp`/`PgDn`
 - Added ability to autocomplete code snippets with newlines (\n) and tabs (\t)
-- Added ability to move caret to indicator (|) after autcompleting (escape with \| if you want to insert a literal pipe)
+- Added ability to move caret to indicator (`|`) after autcompleting (escape with `\|` if you want to insert a literal pipe)
 - Added ability to close suggestions list by pressing `Esc`
 - Changed monospace font to Consolas
 - Changed default minimum trigger length to 2
-- Changed suggestions list hotkeys from `Alt + <Numb>` to `<Num>`
+- Changed suggestions list hotkeys from `Alt + <Num>` to `<Num>`
 - Replaced English word list with a few code samples
 - Fixed "0." not displayed in suggestions list
 
