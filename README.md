@@ -32,7 +32,7 @@ Key settings are URL encoded lists of key names such as `Space` and `d` where ea
 Modifications by thdoan
 -----------------------
 
-- Added support for "<" character by default (to autocomplete `<tag>`)
+- Added support for characters `< ( {` by default (to autocomplete `<tag>`, etc.)
 - Added support for NumPad navigation in suggestions list
 - Added ability to navigate suggestions list with `PgUp`/`PgDn`
 - Added ability to autocomplete code snippets with newlines (\n) and tabs (\t)
@@ -48,6 +48,7 @@ Modifications by thdoan
 - Fixed "0." not displayed in suggestions list
 - Fixed incompatibility bug with v1.1.20.00 and higher
 - Fixed horizontal scrollbar in Preferences wordlist
+- Fixed Regular Expressions reserved characters not escaped in wordlist
 
 Licence
 -------

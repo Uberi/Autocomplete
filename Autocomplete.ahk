@@ -23,7 +23,7 @@ CorrectCase := True ;whether or not to fix uppercase or lowercase to match the s
 
 NormalKeyList := "a`nb`nc`nd`ne`nf`ng`nh`ni`nj`nk`nl`nm`nn`no`np`nq`nr`ns`nt`nu`nv`nw`nx`ny`nz" ;list of key names separated by `n that make up words in upper and lower case variants
 NumberKeyList := "1`n2`n3`n4`n5`n6`n7`n8`n9`n0" ;list of key names separated by `n that make up words as well as their numpad equivalents
-OtherKeyList := "<`n'`n-" ;list of key names separated by `n that make up words
+OtherKeyList := "<`n(`n{`n'`n-" ;list of key names separated by `n that make up words
 ResetKeyList := "Esc`nSpace`nHome`nNumpadHome`nEnd`nNumpadEnd`nLeft`nNumpadLeft`nRight`nNumpadRight`nRButton`nMButton`n,`n.`n/`n[`n]`n;`n\`n=`n```n""" ;list of key names separated by `n that cause suggestions to reset
 TriggerKeyList := "Tab`nEnter`nNumpadEnter" ;list of key names separated by `n that trigger completion
 
@@ -401,7 +401,11 @@ SetHotkeys(NormalKeyList,NumberKeyList,OtherKeyList,ResetKeyList,TriggerKeyList)
 
 Suggest(CurrentWord,ByRef WordList)
 {
-    Pattern := RegExReplace(CurrentWord,"S).","$0.*") ;subsequence matching pattern
+    ;escape Regular Expressions reserved characters
+    Pattern := RegExReplace(CurrentWord,"[.?*+(){}\[\]|\\^$]","\$0")
+    Pattern := RegExReplace(Pattern,".+","$0.*")
+    ;TODO: use below instead if Fuzzy Matching is enabled
+    ;Pattern := RegExReplace(Pattern,"S).","$0.*") ;subsequence matching pattern
 
     ;treat accented characters as equivalent to their unaccented counterparts
     Pattern := RegExReplace(Pattern,"S)[a" . Chr(224) . Chr(226) . "]","[a" . Chr(224) . Chr(226) . "]")
@@ -447,10 +451,15 @@ Score(Word,Entry)
         Position ++
     Score *= Position ** 8
 
-    ;determine number of superfluous characters
-    RegExMatch(Entry,"`nimS)^" . SubStr(RegExReplace(Word,"S).","$0.*"),1,-2),Remaining)
-    Score *= (1 + StrLen(Remaining) - Length) ** -1.5
+    ;escape Regular Expressions reserved characters
+    Pattern := RegExReplace(Word,"[.?*+(){}\[\]|\\^$]","\$0")
+    Pattern := "`nimS)^" . SubStr(RegExReplace(Pattern,".+","$0.*"),1,-2)
+    ;TODO: use below instead if Fuzzy Matching is enabled
+    ;Pattern := "`nimS)^" . SubStr(RegExReplace(Pattern,"S).","$0.*"),1,-2)
 
+    ;determine number of superfluous characters
+    RegExMatch(Entry,Pattern,Remaining)
+    Score *= (1 + StrLen(Remaining) - Length) ** -1.5
     Score *= StrLen(Word) ** 0.4
 
     Return, Score
