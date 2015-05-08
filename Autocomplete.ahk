@@ -329,10 +329,16 @@ DisplayList := SubStr(DisplayList,1,-1)
 GuiControl,, Matched, `n%DisplayList%
 GuiControl, Choose, Matched, 1
 GuiControl, Move, Matched, w%MaxWidth% ;set the control width
-PosX := (A_CaretX || 0) + OffsetX
+If A_CaretX
+    PosX := A_CaretX + OffsetX
+Else
+    PosX := OffsetX
 If PosX + MaxWidth > ScreenWidth ;past right side of the screen
     PosX := ScreenWidth - MaxWidth
-PosY := (A_CaretY || 0) + OffsetY
+If A_CaretY
+    PosY := A_CaretY + OffsetY
+Else
+    PosY := OffsetY
 If PosY + BoxHeight > ScreenHeight ;past bottom of the screen
     PosY := ScreenHeight - BoxHeight
 Gui, Show, x%PosX% y%PosY% w%MaxWidth% NoActivate ;show window
