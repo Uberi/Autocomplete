@@ -2,7 +2,8 @@ Autocomplete by Uberi
 =====================
 Suggests and completes words as you type! Write faster and more efficiently.
 
-# [Get it now](https://github.com/Uberi/Autocomplete/releases/)
+# [Get the latest version](https://github.com/Uberi/Autocomplete/archive/master.zip)
+# [See stable releases/binaries](https://github.com/Uberi/Autocomplete/releases/)
 
 ![Screenshot](Screenshot.png)
 
